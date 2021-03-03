@@ -1,32 +1,37 @@
 <div id="paypal-button-container"></div>
-<script src="https://www.paypal.com/sdk/js?client-id=AZIvXr2CLVO_Svm5FiSzdfseKEmw4L1obamprHG8Rc9x03g_PQ5WPWyxUKG77zKsDLC6HaKOxK5yb_IY"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AQ3IY9yWEZ1wYtCmzXiHBorVlyI99drt5_3WIEC0PW-PZrwZlwbGjMcvm8xWwoXYZAt9yf8AlXZPIk31"></script>
 <script>
   (function($){
     $(document).ready(function(){
       var successAlert = document.getElementById('success-alert');
       successAlert.style.opacity = 0;
-      
-      paypal.Buttons({
-        createOrder: function(data, actions) {
-          // This function sets up the details of the transaction, including the amount and line item details.
-          return actions.order.create({
-            purchase_units: [{
-              amount: {
-                value: '0.01'
-              },
-              description: 'Bundle 1',
-              custom_id: '1'
-            }]
-          });
-        },
-        onApprove: function(data, actions) {
-          // This function captures the funds from the transaction.
-          return actions.order.capture().then(function(details) {
-            // This function shows a transaction success message to your buyer.
-            successAlert.style.opacity = 1;
-          });
-        }
-      }).render('#paypal-button-container');
+      var productId = 2;
+
+      $.getJSON('https://api.paywall.mohanji.org/api/products/' + productId, function(product) {
+        console.log(product)
+
+        paypal.Buttons({
+          createOrder: function(data, actions) {
+            // This function sets up the details of the transaction, including the amount and line item details.
+            return actions.order.create({
+              purchase_units: [{
+                amount: {
+                  value: product.Price
+                },
+                description: product.Description,
+                custom_id: product.Id
+              }]
+            });
+          },
+          onApprove: function(data, actions) {
+            // This function captures the funds from the transaction.
+            return actions.order.capture().then(function(details) {
+              // This function shows a transaction success message to your buyer.
+              successAlert.style.opacity = 1;
+            });
+          }
+        }).render('#paypal-button-container');
+      });
     });
   })(jQuery);
 </script>
